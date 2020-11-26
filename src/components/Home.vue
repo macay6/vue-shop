@@ -23,7 +23,8 @@
           unique-opened
           :collapse="isCollapse"
           :collapse-transition="false"
-          router>
+          router
+          :default-active="activePath">
           <!--一级菜单区域-->
           <el-submenu :index="item.id + ''" v-for="item in menuList" :key="item.id">
             <template slot="title">
@@ -33,7 +34,8 @@
               <span>{{ item.authName }}</span>
             </template>
             <!--二级菜单-->
-            <el-menu-item :index="'/'+ menuItem.path" v-for="menuItem in item.children" :key="menuItem.id">
+            <el-menu-item :index="'/'+ menuItem.path" v-for="menuItem in item.children" :key="menuItem.id"
+                          @click="saveCurState('/'+ menuItem.path)">
               <template slot="title">
                 <!--图标-->
                 <i class="el-icon-menu"></i>
@@ -57,6 +59,7 @@ export default {
   data () {
     return {
       isCollapse: false,
+      activePath: '',
       menuList: [],
       iconObj: {
         125: 'iconfont icon-user',
@@ -70,6 +73,8 @@ export default {
   // 生命周期函数的使用，页面加载时调用
   created () {
     this.getMenuList()
+    // 刷新页面是保持之前的二级激活菜单,取出对应的二级菜单index
+    this.activePath = window.sessionStorage.getItem('activePath')
   },
   methods: {
     // 清空token，跳转只登陆页面
@@ -87,6 +92,11 @@ export default {
     // 点击按钮，切换菜单的折叠与展开
     toggleCollapse () {
       this.isCollapse = !this.isCollapse
+    },
+    // 保存链接的激活状态
+    saveCurState (activePath) {
+      window.sessionStorage.setItem('activePath', activePath)
+      this.activePath = activePath
     }
   }
 }
