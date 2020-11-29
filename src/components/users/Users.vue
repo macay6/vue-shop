@@ -61,16 +61,16 @@
           label="操作" width="180px">
           <template slot-scope="prop">
             <!--编辑按钮-->
-            <el-tooltip class="item" effect="dark" content="编辑角色" placement="top-start" :enterable="false">
+            <el-tooltip class="item" effect="dark" content="编辑用户" placement="top-start" :enterable="false">
               <el-button type="primary" icon="el-icon-edit" size="mini" @click="editUser(prop.row.id)"></el-button>
             </el-tooltip>
             <!--删除按钮-->
-            <el-tooltip class="item" effect="dark" content="删除角色" placement="top-start" :enterable="false">
+            <el-tooltip class="item" effect="dark" content="删除用户" placement="top-start" :enterable="false">
               <el-button type="danger" icon="el-icon-delete" size="mini" @click="deleteUser(prop.row.id)"></el-button>
             </el-tooltip>
             <!--分配角色按钮-->
             <el-tooltip class="item" effect="dark" content="分配角色" placement="top-start" :enterable="false">
-              <el-button type="warning" icon="el-icon-setting" size="mini"></el-button>
+              <el-button type="warning" icon="el-icon-setting" size="mini" @click="allotRole(prop.row)"></el-button>
             </el-tooltip>
           </template>
         </el-table-column>
@@ -140,7 +140,31 @@
         <el-button type="primary" @click="editUserInfo">确 定</el-button>
        </span>
     </el-dialog>
-
+    <!--用户分配角色的对话框-->
+    <el-dialog
+      title="分配角色"
+      :visible.sync="setRoleDialogVisible"
+      width="50%"
+      :close-on-click-modal="false"
+      @close="setRoleDialogClose">
+      <!--内容主体区域-->
+      <p>当前的用户：{{ this.userInfo.username }}</p>
+      <p>当前的角色：{{ this.userInfo.role_name }}</p>
+      <p>分配新角色：</p>
+      <el-select v-model="selectedRoleId" placeholder="请选择">
+        <el-option
+          v-for="item in rolesList"
+          :key="item.id"
+          :label="item.roleName"
+          :value="item.id">
+        </el-option>
+      </el-select>
+      <!--底部区域-->
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="setRoleDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="saveRoleInfo">确 定</el-button>
+       </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -260,7 +284,15 @@ export default {
             trigger: 'blur'
           }
         ]
-      }
+      },
+      // 控制设置用户角色的对话框的显示与隐藏
+      setRoleDialogVisible: false,
+      // 需要被分配角色的用户信息
+      userInfo: {},
+      // 角色列表
+      rolesList: [],
+      // 已选中角色的ID
+      selectedRoleId: ''
     }
   },
   created () {
@@ -354,10 +386,10 @@ export default {
         this.$message.success('更新用户信息成功')
       })
     },
-    // 根据ID删除对于的用户
+    // 根据ID删除对应的用户
     async deleteUser (id) {
       // 弹框询问是否删除用户
-      const confirmResult = await this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+      const confirmResult = await this.$confirm('此操作将永久删除该用户, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
@@ -375,14 +407,43 @@ export default {
       this.$message.success('删除用户成功')
       // 刷新用户列表
       this.queryUsersList()
+    },
+    // 给用户分配角色
+    async allotRole (userInfo) {
+      // 获取当前用户的信息
+      this.userInfo = userInfo
+      this.setRoleDialogVisible = true
+      // 获取所以角色信息
+      const { data: res } = await this.$http.get('roles')
+      if (res.meta.status !== 200) {
+        return this.$message.error('获取角色列表失败')
+      }
+      this.rolesList = res.data
+    },
+    // 点击确定，保存用户的新角色
+    async saveRoleInfo () {
+      if (!this.selectedRoleId) {
+        return this.$message.error('请选择要分配的角色')
+      }
+      // 发起更新用户角色的请求
+      const { data: res } = await this.$http.put(`users/${this.userInfo.id}/role`, { rid: this.selectedRoleId })
+      if (res.meta.status !== 200) {
+        this.$message.error('更新用户角色失败')
+      }
+      this.$message.success('更新用户角色成功')
+      // 更新用户列表
+      this.queryUsersList()
+      this.setRoleDialogVisible = false
+    },
+    // 关闭分配角色的对话框
+    setRoleDialogClose () {
+      this.userInfo = {}
+      this.selectedRoleId = ''
     }
   }
 }
 </script>
 
 <style lang="less" scoped>
-.el-table {
-  margin-top: 15px;
-  font-size: 14px;
-}
+
 </style>
