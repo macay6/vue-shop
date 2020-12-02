@@ -7,6 +7,8 @@ import './plugins/element.js'
 import './assets/fonts/iconfont.css'
 // 导入全局样式表
 import './assets/css/global.css'
+// 导入组件
+import TreeTable from 'vue-table-with-tree-grid'
 
 // 配置axios
 import axios from 'axios'
@@ -20,6 +22,8 @@ axios.interceptors.request.use(config => {
   return config
 })
 Vue.prototype.$http = axios
+
+Vue.component('tree-table', TreeTable)
 
 Vue.config.productionTip = false
 new Vue({
