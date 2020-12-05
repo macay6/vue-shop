@@ -29,7 +29,10 @@ import {
   Tree,
   Select,
   Option,
-  Cascader
+  Cascader,
+  Alert,
+  Tabs,
+  TabPane
 } from 'element-ui'
 
 Vue.use(Button)
@@ -60,6 +63,9 @@ Vue.use(Tree)
 Vue.use(Select)
 Vue.use(Option)
 Vue.use(Cascader)
+Vue.use(Alert)
+Vue.use(Tabs)
+Vue.use(TabPane)
 // Message可以挂载在Vue实例上实现每个组件都可以使$message的效果
 Vue.prototype.$message = Message
 // 全局挂载confirm

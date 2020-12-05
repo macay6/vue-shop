@@ -245,7 +245,7 @@ export default {
 }
 
 .el-cascader {
-  width: 100%;
+  width: 90%;
 }
 
 .el-cascader-panel {
