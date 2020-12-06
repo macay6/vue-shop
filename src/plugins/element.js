@@ -32,7 +32,12 @@ import {
   Cascader,
   Alert,
   Tabs,
-  TabPane
+  TabPane,
+  Step,
+  Steps,
+  CheckboxGroup,
+  Checkbox,
+  Upload
 } from 'element-ui'
 
 Vue.use(Button)
@@ -66,6 +71,11 @@ Vue.use(Cascader)
 Vue.use(Alert)
 Vue.use(Tabs)
 Vue.use(TabPane)
+Vue.use(Step)
+Vue.use(Steps)
+Vue.use(CheckboxGroup)
+Vue.use(Checkbox)
+Vue.use(Upload)
 // Message可以挂载在Vue实例上实现每个组件都可以使$message的效果
 Vue.prototype.$message = Message
 // 全局挂载confirm
